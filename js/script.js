@@ -9,11 +9,10 @@
 
 const WIDTH = 21
 const HEIGHT = 21
-const TICKSPEED = 500
 const COLORS = {
-  snake: 'yellow',
-  food: 'blue',
-  cell: 'red'
+  snake: 'var(--snake-color)',
+  food: 'var(--food-color)',
+  cell: 'var(--cell-color)'
 }
 const KEYCODES = {
   38: 'u',
@@ -32,6 +31,13 @@ const DIRECTIONS = {
   l: [0, -1]
 }
 
+/* +-+-+-+- AUDIO -+-+-+-+ */
+const audioSoftClick = new Audio('assets/softclick.wav')
+audioSoftClick.volume = 0.3
+const audioChime = new Audio('assets/chime.wav')
+const audioGameOver = new Audio('assets/gameover.wav')
+const audioSpeedUp = new Audio('assets/speedup.wav')
+
 /* +-+-+-+- STATE VARIABLES -+-+-+-+ */
 let tailLength
 let currentDirection
@@ -41,6 +47,7 @@ let foodLocation
 let highScore
 let alive
 let moveQueued
+let tickspeed
 
 /* +-+-+-+- HTML ELEMENTS -+-+-+-+ */
 const boardEl = document.querySelector('#board')
@@ -52,6 +59,7 @@ const createBoard = () => {
     for (let col = 0; col < HEIGHT; col++) {
       const newCell = document.createElement('div')
       newCell.id = `r${row}c${col}`
+      newCell.style.backgroundColor = COLORS.cell
       boardEl.appendChild(newCell)
     }
   }
@@ -96,8 +104,8 @@ const checkCollisions = (loc) => {
   if (loc[0] < 0 || loc[0] >= HEIGHT || loc[1] < 0 || loc[1] >= WIDTH) {
     alive = false
   }
-  tail.forEach((cell) => {
-    if (compareArrays(cell, loc)) alive = false
+  tail.forEach((tailCell) => {
+    if (compareArrays(tailCell, loc)) alive = false
   })
 }
 
@@ -110,18 +118,20 @@ const moveSnake = () => {
   ]
 
   checkCollisions(newLocation)
-  console.log(alive)
 
   if (alive) {
     currentLocation = newLocation
 
     if (compareArrays(currentLocation, foodLocation)) {
       tailLength++
+      audioChime.play()
       newFood()
     } else {
       let prevTail = tail.shift()
       clearCell(prevTail)
     }
+    audioSoftClick.currentTime = 0
+    audioSoftClick.play()
     render()
   }
 }
@@ -145,13 +155,22 @@ const handleKeydown = (e) => {
   }
 }
 
+const gameOver = () => {
+  audioGameOver.play()
+  console.log('dead')
+}
+
 const playGame = () => {
   moveSnake()
-  if (alive) setTimeout(playGame, TICKSPEED)
+  tickspeed =
+    tailLength < 5 ? 300 : tailLength < 10 ? 250 : tailLength < 15 ? 200 : 150
+  if (alive) setTimeout(playGame, tickspeed)
+  else gameOver()
 }
 
 const init = () => {
   createBoard()
+  tickspeed = 300
   tailLength = 0
   tail = []
   currentLocation = [Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2)]
@@ -165,7 +184,8 @@ const init = () => {
 /* +-+-+-+- EVENT LISTENERS -+-+-+-+ */
 
 document.addEventListener('keydown', handleKeydown)
+document.addEventListener('click', init)
 
 /* +-+-+-+- INITIATION -+-+-+-+ */
 
-init()
+// init()

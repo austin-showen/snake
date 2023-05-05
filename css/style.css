@@ -1,3 +1,16 @@
+:root {
+  --bg-color: #202020;
+  --snake-color: #CAD2C5;
+  --cell-color: #8E5572;
+  --food-color: #20A4F3;
+  --text-color: #ffffff;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color)
+}
+
 #board {
   width: 200px;
   display: grid;
@@ -7,5 +20,5 @@
 }
 
 #board>div {
-  background-color: red;
+  border-radius: 20%;
 }
