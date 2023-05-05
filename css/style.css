@@ -1,0 +1,11 @@
+#board {
+  width: 200px;
+  display: grid;
+  grid-template-columns: repeat(21, 15px);
+  grid-template-rows: repeat(21, 15px);
+  gap: 1px;
+}
+
+#board>div {
+  background-color: red;
+}
