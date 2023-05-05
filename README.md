@@ -47,7 +47,6 @@
 
 ### **_Future Updates_**
 
-- [ ] The game will be updated with a snazzy theme
 - [ ] A simple musical tone will play when the snake moves, changes direction, or scores a point.
 - [ ] The difficulty will increase at certain score thresholds, increasing the speed of the game.
 - [ ] When the difficulty increases, a musical cue will play, and the sound effects will increase in pitch.
