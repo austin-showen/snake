@@ -12,12 +12,14 @@ tail // array of length tailLength indexing all cells currently part of the tail
         the first element is the oldest cell in the tail, and new cells are added to the end
 foodLocation // [x, y] array indexing the food's location
 highScore
+alive // boolean
 
 // Select HTML elements
+select 
 
 // Functions
 gameOver():
-  clear timeout
+  alive = false
   display the player's score (tailLength)
   prompt the player to start a new game (if so, init)
 
@@ -35,8 +37,12 @@ moveSnake():
   add each element of the currentDirection array to the corresponding element of the location array
   if the new location is in the tail or outside the boundaries, gameOver()
   if location === foodLocation, tailLength++ and newFood()
-  else, unshift the first (oldest) element of tail
+  else, unshift the first (oldest) element of tail and clearRender() that cell
   render()
+
+clearRender(cell):
+  select the HTML div corresponding to the given cell
+  set the cell's background-color back to the default
 
 renderFood():
   select the HTML div corresponding to foodLocation
@@ -67,10 +73,11 @@ init():
   tail = []
   location = midpoint of the board ([WIDTH / 2 + 1, HEIGHT / 2 + 1])
   currentDirection = [0, 1] (snake starts moving right until a new direction is provided)
+  alive = true
   newFood()
   render()
   while the snake is alive:
-    setTimeout to moveSnake() every TICKSPEED
+    use setTimeout to call moveSnake() every TICKSPEED
 
 // Event Listeners
 if the game hasn't started and the Enter key is pressed, init
