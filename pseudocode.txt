@@ -1,1 +1,77 @@
+// Declare constants
+COLORS // object storing the CSS color codes for empty cells, snake, and food
+WIDTH // width of the game board (number of cells)
+HEIGHT // height of the game board (number of cells)
+TICKSPEED // number of milliseconds per move
 
+// Declare state variables
+tailLength // starts at 1, increases every time the snake eats a piece of food
+currentDirection // [1, 0], [0, 1], [-1, 0], or [0, -1] -> up, right, down, left
+location // [x, y] array indexing the snake's current location, i.e. [4, 5]
+tail // array of length tailLength indexing all cells currently part of the tail;
+        the first element is the oldest cell in the tail, and new cells are added to the end
+foodLocation // [x, y] array indexing the food's location
+highScore
+
+// Select HTML elements
+
+// Functions
+gameOver():
+  clear timeout
+  display the player's score (tailLength)
+  prompt the player to start a new game (if so, init)
+
+newFood():
+  set foodLocation to a random cell in the board
+
+changeDirection(key):
+  if the key is Up or W, currentDirection = [1, 0]
+  if the key is Right or D, currentDirection = [0, 1]
+  if the key is Down or S, currentDirection = [-1, 0]
+  if the key is Left or A, currentDirection = [0, -1]
+
+moveSnake():
+  push location onto tail
+  add each element of the currentDirection array to the corresponding element of the location array
+  if the new location is in the tail or outside the boundaries, gameOver()
+  if location === foodLocation, tailLength++ and newFood()
+  else, unshift the first (oldest) element of tail
+  render()
+
+renderFood():
+  select the HTML div corresponding to foodLocation
+  set the cell's style to display a piece of food (either add a class or update background-color)
+
+renderSnake():
+  select the HTML div corresponding to location
+  set the cell's style to display the snake's head, pointing in the correct direction
+  for each cell in tail:
+    select the HTML div corresponding to the cell
+    set the cell's style to display the snake's tail (update background-color)
+
+renderText():
+  select the HTML element displaying the current score,
+    then set its innerText to tailLength
+  if tailLength > highScore:
+    select the HTML element displaying the high score,
+    then set its innerText to tailLength
+
+render():
+  renderFood()
+  renderSnake()
+  renderText()
+
+init():
+  board = 2d array of HEIGHT rows and WIDTH columns
+  tailLength = 0
+  tail = []
+  location = midpoint of the board ([WIDTH / 2 + 1, HEIGHT / 2 + 1])
+  currentDirection = [0, 1] (snake starts moving right until a new direction is provided)
+  newFood()
+  render()
+  while the snake is alive:
+    setTimeout to moveSnake() every TICKSPEED
+
+// Event Listeners
+if the game hasn't started and the Enter key is pressed, init
+if the game is running and an arrow key or WASD is pressed, changeDirection
