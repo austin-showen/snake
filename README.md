@@ -27,7 +27,9 @@
 
 ### **_Getting Started_**
 
-#### Press ENTER to begin a game of Snake in the browser.
+#### Press ENTER to begin a game of Snake. Control the snake with the arrow keys or WASD to collect food and grow.
+
+#### Watch out! If you try to eat your own tail or if you travel out of bounds, the game ends!
 
 #### Minimum Viable Product:
 
@@ -45,9 +47,10 @@
 
 ### **_Future Updates_**
 
+- [ ] The game will be updated with a snazzy theme
 - [ ] A simple musical tone will play when the snake moves, changes direction, or scores a point.
 - [ ] The difficulty will increase at certain score thresholds, increasing the speed of the game.
-  - [ ] When the difficulty increases, a musical cue will play, and the sound effects will increase in pitch.
+- [ ] When the difficulty increases, a musical cue will play, and the sound effects will increase in pitch.
 - [ ] The user can change the size of the grid.
 - [ ] The user can select a difficulty level, which change's the snake's movement speed.
 - [ ] High scores are tracked on a scoreboard.
