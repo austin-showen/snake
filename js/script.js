@@ -7,8 +7,8 @@
 
 /* +-+-+-+- CONSTANTS -+-+-+-+ */
 
-const WIDTH = 21
-const HEIGHT = 21
+const WIDTH = 15
+const HEIGHT = 15
 const COLORS = {
   snake: 'var(--snake-color)',
   food: 'var(--food-color)',
@@ -25,10 +25,10 @@ const KEYCODES = {
   65: 'l'
 }
 const DIRECTIONS = {
-  u: { x: 0, y: -1 },
-  r: { x: 1, y: 0 },
-  d: { x: 0, y: 1 },
-  l: { x: -1, y: 0 }
+  u: { x: 0, y: -1, opposite: 'd' },
+  r: { x: 1, y: 0, opposite: 'l' },
+  d: { x: 0, y: 1, opposite: 'u' },
+  l: { x: -1, y: 0, opposite: 'r' }
 }
 
 /* +-+-+-+- AUDIO -+-+-+-+ */
@@ -116,8 +116,8 @@ const moveSnake = () => {
   moveQueued = false
   tail.push(currentLocation)
   const newLocation = {
-    x: currentLocation.x + currentDirection.x,
-    y: currentLocation.y + currentDirection.y
+    x: currentLocation.x + DIRECTIONS[currentDirection].x,
+    y: currentLocation.y + DIRECTIONS[currentDirection].y
   }
 
   checkCollisions(newLocation)
@@ -127,11 +127,11 @@ const moveSnake = () => {
 
     if (compareLocations(currentLocation, foodLocation)) {
       tailLength++
+      audioChime.currentTime = 0
       audioChime.play()
       newFood()
     } else {
       let prevTail = tail.shift()
-      console.log(prevTail)
       clearCell(prevTail)
     }
     audioSoftClick.currentTime = 0
@@ -147,10 +147,10 @@ const handleKeydown = (e) => {
   const validKeys = Object.keys(KEYCODES)
   if (!validKeys.includes(keyCodeStr)) return
 
-  const newDirection = DIRECTIONS[KEYCODES[keyCodeStr]]
+  const newDirection = KEYCODES[keyCodeStr]
   if (
-    newDirection.x + currentDirection.x === 0 &&
-    newDirection.y + currentDirection.y === 0
+    newDirection === currentDirection ||
+    newDirection === DIRECTIONS[currentDirection].opposite
   )
     return
   else {
@@ -181,7 +181,7 @@ const init = () => {
     x: Math.floor(WIDTH / 2),
     y: Math.floor(HEIGHT / 2)
   }
-  currentDirection = DIRECTIONS.r
+  currentDirection = 'r'
   alive = true
   newFood()
   render()
