@@ -25,10 +25,10 @@ const KEYCODES = {
   65: 'l'
 }
 const DIRECTIONS = {
-  u: [-1, 0],
-  r: [0, 1],
-  d: [1, 0],
-  l: [0, -1]
+  u: { x: 0, y: -1 },
+  r: { x: 1, y: 0 },
+  d: { x: 0, y: 1 },
+  l: { x: -1, y: 0 }
 }
 
 /* +-+-+-+- AUDIO -+-+-+-+ */
@@ -69,19 +69,22 @@ const newFood = () => {
   if (foodLocation) clearCell(foodLocation)
   const foodRow = Math.floor(Math.random() * HEIGHT)
   const foodCol = Math.floor(Math.random() * WIDTH)
-  foodLocation = [foodRow, foodCol]
+  foodLocation = {
+    x: foodCol,
+    y: foodRow
+  }
 }
 
 const renderFood = () => {
   const foodCellEl = document.querySelector(
-    `#r${foodLocation[0]}c${foodLocation[1]}`
+    `#r${foodLocation.y}c${foodLocation.x}`
   )
   foodCellEl.style.backgroundColor = COLORS.food
 }
 
 const renderSnake = () => {
   const snakeEl = document.querySelector(
-    `#r${currentLocation[0]}c${currentLocation[1]}`
+    `#r${currentLocation.y}c${currentLocation.x}`
   )
   snakeEl.style.backgroundColor = COLORS.snake
 }
@@ -92,42 +95,43 @@ const render = () => {
 }
 
 const clearCell = (loc) => {
-  const cellEl = document.querySelector(`#r${loc[0]}c${loc[1]}`)
+  const cellEl = document.querySelector(`#r${loc.y}c${loc.x}`)
   cellEl.style.backgroundColor = COLORS.cell
 }
 
-const compareArrays = (arr1, arr2) => {
-  return arr1.join(' ') === arr2.join(' ')
+const compareLocations = (loc1, loc2) => {
+  return loc1.x === loc2.x && loc1.y === loc2.y
 }
 
 const checkCollisions = (loc) => {
-  if (loc[0] < 0 || loc[0] >= HEIGHT || loc[1] < 0 || loc[1] >= WIDTH) {
+  if (loc.y < 0 || loc.y >= HEIGHT || loc.x < 0 || loc.x >= WIDTH) {
     alive = false
   }
   tail.forEach((tailCell) => {
-    if (compareArrays(tailCell, loc)) alive = false
+    if (compareLocations(tailCell, loc)) alive = false
   })
 }
 
 const moveSnake = () => {
   moveQueued = false
-  tail.push([...currentLocation])
-  const newLocation = [
-    currentLocation[0] + currentDirection[0],
-    currentLocation[1] + currentDirection[1]
-  ]
+  tail.push(currentLocation)
+  const newLocation = {
+    x: currentLocation.x + currentDirection.x,
+    y: currentLocation.y + currentDirection.y
+  }
 
   checkCollisions(newLocation)
 
   if (alive) {
     currentLocation = newLocation
 
-    if (compareArrays(currentLocation, foodLocation)) {
+    if (compareLocations(currentLocation, foodLocation)) {
       tailLength++
       audioChime.play()
       newFood()
     } else {
       let prevTail = tail.shift()
+      console.log(prevTail)
       clearCell(prevTail)
     }
     audioSoftClick.currentTime = 0
@@ -145,8 +149,8 @@ const handleKeydown = (e) => {
 
   const newDirection = DIRECTIONS[KEYCODES[keyCodeStr]]
   if (
-    newDirection[0] + currentDirection[0] === 0 &&
-    newDirection[1] + currentDirection[1] === 0
+    newDirection.x + currentDirection.x === 0 &&
+    newDirection.y + currentDirection.y === 0
   )
     return
   else {
@@ -173,19 +177,21 @@ const init = () => {
   tickspeed = 300
   tailLength = 0
   tail = []
-  currentLocation = [Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2)]
+  currentLocation = {
+    x: Math.floor(WIDTH / 2),
+    y: Math.floor(HEIGHT / 2)
+  }
   currentDirection = DIRECTIONS.r
   alive = true
   newFood()
   render()
-  playGame()
+  document.addEventListener('click', playGame)
 }
 
 /* +-+-+-+- EVENT LISTENERS -+-+-+-+ */
 
 document.addEventListener('keydown', handleKeydown)
-document.addEventListener('click', init)
 
-/* +-+-+-+- INITIATION -+-+-+-+ */
+/* +-+-+-+- INITIALIZATION -+-+-+-+ */
 
-// init()
+init()
