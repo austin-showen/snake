@@ -3,6 +3,9 @@
  *
  * Author: Austin Showen
  * Date: 05/05/2023
+ *
+ * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
+ * Sound effects: https://mixkit.co
  **/
 
 /* +-+-+-+- CONSTANTS -+-+-+-+ */
@@ -48,6 +51,7 @@ let highScore
 let alive
 let moveQueued
 let tickspeed
+let messageText
 
 /* +-+-+-+- HTML ELEMENTS -+-+-+-+ */
 const boardEl = document.querySelector('#board')
@@ -58,6 +62,7 @@ const messageEl = document.querySelector('#message')
 /* +-+-+-+- FUNCTIONS -+-+-+-+ */
 
 const createBoard = () => {
+  boardEl.innerHTML = ''
   for (let row = 0; row < WIDTH; row++) {
     for (let col = 0; col < HEIGHT; col++) {
       const newCell = document.createElement('div')
@@ -92,9 +97,14 @@ const renderSnake = () => {
   snakeEl.style.backgroundColor = COLORS.snake
 }
 
+const renderMessage = () => {
+  messageEl.innerText = `Eat the food! Avoid your tail!\n${messageText}`
+}
+
 const render = () => {
   renderFood()
   renderSnake()
+  renderMessage()
 }
 
 const clearCell = (loc) => {
@@ -155,29 +165,34 @@ const moveSnake = () => {
 const handleKeydown = (e) => {
   if (moveQueued) return
 
-  const keyCodeStr = e.keyCode.toString()
-  const validKeys = Object.keys(KEYCODES)
-  if (!validKeys.includes(keyCodeStr)) return
+  if (e.keyCode === 82) init()
 
-  const newDirection = KEYCODES[keyCodeStr]
-  if (
-    newDirection === currentDirection ||
-    newDirection === DIRECTIONS[currentDirection].opposite
-  )
-    return
-  else {
-    moveQueued = true
-    currentDirection = newDirection
+  if (alive) {
+    const keyCodeStr = e.keyCode.toString()
+    const validKeys = Object.keys(KEYCODES)
+    if (!validKeys.includes(keyCodeStr)) return
+
+    const newDirection = KEYCODES[keyCodeStr]
+    if (
+      newDirection === currentDirection ||
+      newDirection === DIRECTIONS[currentDirection].opposite
+    )
+      return
+    else {
+      moveQueued = true
+      currentDirection = newDirection
+    }
   }
 }
 
 const gameOver = () => {
   audioGameOver.play()
-  messageEl.innerText = `Game over! You scored ${tailLength}. Press R to restart.`
+  messageEl.innerText = `Game over! You scored ${tailLength}.\nPress R to restart.`
 }
 
 const playGame = () => {
-  document.removeEventListener('click', playGame)
+  document.removeEventListener('keydown', playGame)
+  messageText = 'Move with the arrow keys or WASD.'
   moveSnake()
   tickspeed =
     tailLength < 5 ? 300 : tailLength < 10 ? 250 : tailLength < 15 ? 200 : 150
@@ -187,9 +202,13 @@ const playGame = () => {
 
 const init = () => {
   createBoard()
+  messageText = 'Press any key to begin.'
   tickspeed = 300
   tailLength = 0
   if (!highScore) highScore = 0
+  if (tail) {
+    tail.forEach((cell) => clearCell(cell))
+  }
   tail = []
   currentLocation = {
     x: Math.floor(WIDTH / 2),
@@ -199,7 +218,7 @@ const init = () => {
   alive = true
   newFood()
   render()
-  const newGame = document.addEventListener('click', playGame)
+  document.addEventListener('keydown', playGame)
 }
 
 /* +-+-+-+- EVENT LISTENERS -+-+-+-+ */
