@@ -51,6 +51,9 @@ let tickspeed
 
 /* +-+-+-+- HTML ELEMENTS -+-+-+-+ */
 const boardEl = document.querySelector('#board')
+const currentScoreEl = document.querySelector('#current-score')
+const highScoreEl = document.querySelector('#high-score')
+const messageEl = document.querySelector('#message')
 
 /* +-+-+-+- FUNCTIONS -+-+-+-+ */
 
@@ -112,6 +115,18 @@ const checkCollisions = (loc) => {
   })
 }
 
+const eatFood = () => {
+  tailLength++
+  currentScoreEl.innerText = `Score: ${tailLength}`
+  if (tailLength > highScore) {
+    highScore = tailLength
+    highScoreEl.innerText = `High Score: ${highScore}`
+  }
+  audioChime.currentTime = 0
+  audioChime.play()
+  newFood()
+}
+
 const moveSnake = () => {
   moveQueued = false
   tail.push(currentLocation)
@@ -126,10 +141,7 @@ const moveSnake = () => {
     currentLocation = newLocation
 
     if (compareLocations(currentLocation, foodLocation)) {
-      tailLength++
-      audioChime.currentTime = 0
-      audioChime.play()
-      newFood()
+      eatFood()
     } else {
       let prevTail = tail.shift()
       clearCell(prevTail)
@@ -161,10 +173,11 @@ const handleKeydown = (e) => {
 
 const gameOver = () => {
   audioGameOver.play()
-  console.log('dead')
+  messageEl.innerText = `Game over! You scored ${tailLength}. Press R to restart.`
 }
 
 const playGame = () => {
+  document.removeEventListener('click', playGame)
   moveSnake()
   tickspeed =
     tailLength < 5 ? 300 : tailLength < 10 ? 250 : tailLength < 15 ? 200 : 150
@@ -176,6 +189,7 @@ const init = () => {
   createBoard()
   tickspeed = 300
   tailLength = 0
+  if (!highScore) highScore = 0
   tail = []
   currentLocation = {
     x: Math.floor(WIDTH / 2),
@@ -185,7 +199,7 @@ const init = () => {
   alive = true
   newFood()
   render()
-  document.addEventListener('click', playGame)
+  const newGame = document.addEventListener('click', playGame)
 }
 
 /* +-+-+-+- EVENT LISTENERS -+-+-+-+ */
