@@ -12,7 +12,7 @@
 
 body {
   background-image: url("../assets/nightsky.jpg");
-  background-size: auto;
+  background-size: cover;
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: 'Comfortaa', cursive;
