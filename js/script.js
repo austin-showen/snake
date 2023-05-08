@@ -15,11 +15,13 @@ const WIDTH = 15
 const HEIGHT = 15
 const TAIL_START_LENGTH = 2
 const TICKSPEED_START = 300
+
 const COLORS = {
   snake: 'var(--snake-color)',
   food: 'var(--food-color)',
   cell: 'var(--cell-color)'
 }
+
 const KEYCODES = {
   38: 'u',
   87: 'u',
@@ -30,6 +32,7 @@ const KEYCODES = {
   37: 'l',
   65: 'l'
 }
+
 const DIRECTIONS = {
   u: {
     x: 0,
