@@ -5,7 +5,7 @@
  * Date: 05/05/2023
  *
  * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
- * Sound effects: https://mixkit.co
+ * Sound effects by Kenney.nl, https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc
  * Spaceship sprite adapted from "Pixel Spaceship" by dsonyy, https://opengameart.org/content/pixel-spaceship
  **/
 
@@ -74,11 +74,10 @@ const DIRECTIONS = {
 }
 
 /* +-+-+-+- AUDIO -+-+-+-+ */
-const audioSoftClick = new Audio('assets/softclick.wav')
-audioSoftClick.volume = 0.3
-const audioChime = new Audio('assets/chime.wav')
-const audioGameOver = new Audio('assets/gameover.wav')
-const audioSpeedUp = new Audio('assets/speedup.wav')
+const audioMove = new Audio('assets/tone1.mp3')
+audioMove.volume = 0.3
+const audioScore = new Audio('assets/phaserUp4.mp3')
+const audioGameOver = new Audio('assets/phaserDown3.mp3')
 
 /* +-+-+-+- STATE VARIABLES -+-+-+-+ */
 let tailLength
@@ -135,7 +134,7 @@ const renderShip = () => {
   const shipEl = document.querySelector(
     `#r${currentLocation.y}c${currentLocation.x}`
   )
-  shipEl.innerHTML = `<img src='../assets/ship2.png' class='rotate${DIRECTIONS[currentDirection].shipRotation}'>`
+  shipEl.innerHTML = `<img src='../assets/ship.png' class='rotate${DIRECTIONS[currentDirection].shipRotation}'>`
 }
 
 const renderMessage = () => {
@@ -182,8 +181,8 @@ const eatFood = () => {
   tailLength++
   score = tailLength - TAIL_START_LENGTH
   renderScores()
-  audioChime.currentTime = 0
-  audioChime.play()
+  audioScore.currentTime = 0
+  audioScore.play()
   newFood()
 }
 
@@ -247,8 +246,8 @@ const moveShip = () => {
       }
       renderTailEnd()
     }
-    audioSoftClick.currentTime = 0
-    audioSoftClick.play()
+    audioMove.currentTime = 0
+    audioMove.play()
     render()
   }
 }

@@ -50,11 +50,16 @@ body {
 #board>div {
   border-radius: 4px;
   border: 0.5px solid black;
+  height: 29px;
+  width: 29px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 header {
-  font-size: 50px;
-  margin: 50px;
+  font-size: 40px;
+  margin: 40px;
 }
 
 #container-scores {
