@@ -95,6 +95,7 @@ let alive
 let moveQueued
 let tickspeed
 let messageText
+let mute
 
 /* +-+-+-+- HTML ELEMENTS -+-+-+-+ */
 const boardEl = document.querySelector('#board')
@@ -184,8 +185,10 @@ const eatFood = () => {
   tailLength++
   score = tailLength - TAIL_START_LENGTH
   renderScores()
-  audioScore.currentTime = 0
-  audioScore.play()
+  if (!mute) {
+    audioScore.currentTime = 0
+    audioScore.play()
+  }
   newFood()
 }
 
@@ -197,10 +200,10 @@ const renderTailStart = () => {
   if (prevDirection) {
     if (prevDirection === currentDirection) {
       rotation = DIRECTIONS[currentDirection].shipRotation
-      tailStartEl.innerHTML = `<img src='../assets/ship-tail-straight.png' class='rotate${rotation}'>`
+      tailStartEl.innerHTML = `<img src='/assets/ship-tail-straight.png' class='rotate${rotation}'>`
     } else {
       rotation = DIRECTIONS[prevDirection].tailBendRotation[currentDirection]
-      tailStartEl.innerHTML = `<img src='../assets/ship-tail-turn.png' class= 'rotate${rotation}'>`
+      tailStartEl.innerHTML = `<img src='/assets/ship-tail-turn.png' class='rotate${rotation}'>`
     }
   }
 }
@@ -221,7 +224,7 @@ const renderTailEnd = () => {
     rotation = DIRECTIONS[currentDirection].shipRotation
   }
 
-  tailEndEl.innerHTML = `<img src='../assets/ship-tail-end.png' class='rotate${rotation}'>`
+  tailEndEl.innerHTML = `<img src='/assets/ship-tail-end.png' class='rotate${rotation}'>`
 }
 
 const moveShip = () => {
@@ -249,16 +252,25 @@ const moveShip = () => {
       }
       renderTailEnd()
     }
-    audioMove.currentTime = 0
-    audioMove.play()
+    if (!mute) {
+      audioMove.currentTime = 0
+      audioMove.play()
+    }
     render()
   }
+}
+
+const toggleMute = () => {
+  mute = !mute
+  document.querySelector('#mute').innerText = mute ? 'M to unmute' : 'M to mute'
 }
 
 const handleKeydown = (e) => {
   if (moveQueued) return
 
   if (e.keyCode === 82) init()
+
+  if (e.keyCode === 77) toggleMute()
 
   if (alive) {
     const keyCodeStr = e.keyCode.toString()
@@ -278,7 +290,7 @@ const handleKeydown = (e) => {
 }
 
 const gameOver = () => {
-  audioGameOver.play()
+  if (!mute) audioGameOver.play()
   messageEl.innerText = `Game over! You scored ${score}.\nPress R to restart.`
 }
 
@@ -298,6 +310,7 @@ const init = () => {
   tailLength = TAIL_START_LENGTH
   score = 0
   if (!highScore) highScore = 0
+  if (!mute) mute = false
   if (tail) {
     tail.forEach((cell) => clearCell(cell))
   }
