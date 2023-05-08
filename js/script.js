@@ -13,6 +13,7 @@
 const WIDTH = 15
 const HEIGHT = 15
 const TAIL_START_LENGTH = 2
+const TICKSPEED_START = 300
 const COLORS = {
   snake: 'var(--snake-color)',
   food: 'var(--food-color)',
@@ -29,10 +30,46 @@ const KEYCODES = {
   65: 'l'
 }
 const DIRECTIONS = {
-  u: { x: 0, y: -1, opposite: 'd', rotation: 0 },
-  r: { x: 1, y: 0, opposite: 'l', rotation: 90 },
-  d: { x: 0, y: 1, opposite: 'u', rotation: 180 },
-  l: { x: -1, y: 0, opposite: 'r', rotation: 270 }
+  u: {
+    x: 0,
+    y: -1,
+    opposite: 'd',
+    rotation: 0,
+    nextDirectionRotation: {
+      l: 270,
+      r: 180
+    }
+  },
+  r: {
+    x: 1,
+    y: 0,
+    opposite: 'l',
+    rotation: 90,
+    nextDirectionRotation: {
+      u: 0,
+      d: 270
+    }
+  },
+  d: {
+    x: 0,
+    y: 1,
+    opposite: 'u',
+    rotation: 180,
+    nextDirectionRotation: {
+      l: 0,
+      r: 90
+    }
+  },
+  l: {
+    x: -1,
+    y: 0,
+    opposite: 'r',
+    rotation: 270,
+    nextDirectionRotation: {
+      u: 90,
+      d: 180
+    }
+  }
 }
 
 /* +-+-+-+- AUDIO -+-+-+-+ */
@@ -45,6 +82,7 @@ const audioSpeedUp = new Audio('assets/speedup.wav')
 /* +-+-+-+- STATE VARIABLES -+-+-+-+ */
 let tailLength
 let currentDirection
+let prevDirection
 let currentLocation
 let tail
 let foodLocation
@@ -123,8 +161,10 @@ const checkCollisions = (loc) => {
   if (loc.y < 0 || loc.y >= HEIGHT || loc.x < 0 || loc.x >= WIDTH) {
     alive = false
   }
-  tail.forEach((tailCell) => {
-    if (compareLocations(tailCell, loc)) alive = false
+  tail.forEach((tailCell, idx) => {
+    if (idx !== 0) {
+      if (compareLocations(tailCell, loc)) alive = false
+    }
   })
 }
 
@@ -144,7 +184,18 @@ const eatFood = () => {
 const renderTailStart = () => {
   const tailStart = tail[tail.length - 1]
   const tailStartEl = document.querySelector(`#r${tailStart.y}c${tailStart.x}`)
-  tailStartEl.innerHTML = `<img src='../assets/ship-tail-straight.png' class='rotate${DIRECTIONS[currentDirection].rotation}'>`
+
+  let rotation
+  if (prevDirection) {
+    if (prevDirection === currentDirection) {
+      rotation = DIRECTIONS[currentDirection].rotation
+      tailStartEl.innerHTML = `<img src='../assets/ship-tail-straight.png' class='rotate${rotation}'>`
+    } else {
+      rotation =
+        DIRECTIONS[prevDirection].nextDirectionRotation[currentDirection]
+      tailStartEl.innerHTML = `<img src='../assets/ship-tail-turn.png' class= 'rotate${rotation}'>`
+    }
+  }
 }
 
 const renderTailEnd = () => {
@@ -178,6 +229,7 @@ const moveSnake = () => {
 
   if (alive) {
     renderTailStart()
+    prevDirection = currentDirection
 
     currentLocation = newLocation
 
@@ -228,7 +280,7 @@ const playGame = () => {
   document.removeEventListener('keydown', playGame)
   messageText = 'Move with the arrow keys or WASD.'
   moveSnake()
-  tickspeed = Math.max(100, 300 - 5 * tailLength)
+  tickspeed = Math.max(100, TICKSPEED_START - 5 * tailLength)
   if (alive) setTimeout(playGame, tickspeed)
   else gameOver()
 }
@@ -236,7 +288,7 @@ const playGame = () => {
 const init = () => {
   createBoard()
   messageText = 'Press any key to begin.'
-  tickspeed = 300
+  tickspeed = TICKSPEED_START
   tailLength = TAIL_START_LENGTH
   score = 0
   if (!highScore) highScore = 0
