@@ -12,6 +12,7 @@
 
 const WIDTH = 15
 const HEIGHT = 15
+const TAIL_START_LENGTH = 2
 const COLORS = {
   snake: 'var(--snake-color)',
   food: 'var(--food-color)',
@@ -47,6 +48,7 @@ let currentDirection
 let currentLocation
 let tail
 let foodLocation
+let score
 let highScore
 let alive
 let moveQueued
@@ -128,9 +130,10 @@ const checkCollisions = (loc) => {
 
 const eatFood = () => {
   tailLength++
-  currentScoreEl.innerText = `Score: ${tailLength}`
-  if (tailLength > highScore) {
-    highScore = tailLength
+  score = tailLength - TAIL_START_LENGTH
+  currentScoreEl.innerText = `Score: ${score}`
+  if (score > highScore) {
+    highScore = score
     highScoreEl.innerText = `High Score: ${highScore}`
   }
   audioChime.currentTime = 0
@@ -234,7 +237,8 @@ const init = () => {
   createBoard()
   messageText = 'Press any key to begin.'
   tickspeed = 300
-  tailLength = 2
+  tailLength = TAIL_START_LENGTH
+  score = 0
   if (!highScore) highScore = 0
   if (tail) {
     tail.forEach((cell) => clearCell(cell))

@@ -38,6 +38,7 @@ body {
 
 #board {
   display: grid;
+  margin: 0 50px;
   grid-template-columns: repeat(15, 29px);
   grid-template-rows: repeat(15, 29px);
 }
