@@ -1,7 +1,7 @@
 :root {
   --bg-color: #202020;
   --snake-color: #CAD2C5;
-  --cell-color: #8E5572;
+  --cell-color: #404040;
   --food-color: #20A4F3;
   --text-color: #ffffff;
 }
@@ -38,14 +38,12 @@ body {
 
 #board {
   display: grid;
-  grid-template-columns: repeat(15, 21px);
-  grid-template-rows: repeat(15, 21px);
-  gap: 1px;
+  grid-template-columns: repeat(15, 29px);
+  grid-template-rows: repeat(15, 29px);
 }
 
 #board>div {
-  border-radius: 20%;
-  opacity: revert;
+  border-radius: 4px;
 }
 
 header {
@@ -65,4 +63,20 @@ header {
   margin-bottom: 50px;
   text-align: center;
   line-height: 40px;
+}
+
+.rotate0 {
+  transform: rotate(0deg);
+}
+
+.rotate90 {
+  transform: rotate(90deg);
+}
+
+.rotate180 {
+  transform: rotate(180deg);
+}
+
+.rotate270 {
+  transform: rotate(270deg);
 }

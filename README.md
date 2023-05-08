@@ -51,7 +51,7 @@
 - [ ] The difficulty will increase at certain score thresholds, increasing the speed of the game.
 - [ ] When the difficulty increases, a musical cue will play, and the sound effects will increase in pitch.
 - [ ] The user can change the size of the grid.
-- [ ] The user can select a difficulty level, which change's the snake's movement speed.
+- [ ] The user can select a difficulty level, which changes the snake's movement speed.
 - [ ] High scores are tracked on a scoreboard.
 
 ---

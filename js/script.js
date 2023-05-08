@@ -28,10 +28,10 @@ const KEYCODES = {
   65: 'l'
 }
 const DIRECTIONS = {
-  u: { x: 0, y: -1, opposite: 'd' },
-  r: { x: 1, y: 0, opposite: 'l' },
-  d: { x: 0, y: 1, opposite: 'u' },
-  l: { x: -1, y: 0, opposite: 'r' }
+  u: { x: 0, y: -1, opposite: 'd', rotation: 0 },
+  r: { x: 1, y: 0, opposite: 'l', rotation: 90 },
+  d: { x: 0, y: 1, opposite: 'u', rotation: 180 },
+  l: { x: -1, y: 0, opposite: 'r', rotation: 270 }
 }
 
 /* +-+-+-+- AUDIO -+-+-+-+ */
@@ -94,7 +94,7 @@ const renderSnake = () => {
   const snakeEl = document.querySelector(
     `#r${currentLocation.y}c${currentLocation.x}`
   )
-  snakeEl.style.backgroundColor = COLORS.snake
+  snakeEl.innerHTML = `<img src='../assets/ship.png' class='rotate${DIRECTIONS[currentDirection].rotation}'>`
 }
 
 const renderMessage = () => {
@@ -110,6 +110,7 @@ const render = () => {
 const clearCell = (loc) => {
   const cellEl = document.querySelector(`#r${loc.y}c${loc.x}`)
   cellEl.style.backgroundColor = COLORS.cell
+  cellEl.innerHTML = ''
 }
 
 const compareLocations = (loc1, loc2) => {
@@ -137,6 +138,31 @@ const eatFood = () => {
   newFood()
 }
 
+const renderTailStart = () => {
+  const tailStart = tail[tail.length - 1]
+  const tailStartEl = document.querySelector(`#r${tailStart.y}c${tailStart.x}`)
+  tailStartEl.innerHTML = `<img src='../assets/ship-tail-straight.png' class='rotate${DIRECTIONS[currentDirection].rotation}'>`
+}
+
+const renderTailEnd = () => {
+  const tailEnd = tail[0]
+  const tailEndEl = document.querySelector(`#r${tailEnd.y}c${tailEnd.x}`)
+
+  let rotation
+
+  if (tail[1]) {
+    if (tail[1].y === tail[0].y) {
+      tail[1].x > tail[0].x ? (rotation = 90) : (rotation = 270)
+    } else {
+      tail[1].y > tail[0].y ? (rotation = 180) : (rotation = 0)
+    }
+  } else {
+    rotation = DIRECTIONS[currentDirection].rotation
+  }
+
+  tailEndEl.innerHTML = `<img src='../assets/ship-tail-end.png' class='rotate${rotation}'>`
+}
+
 const moveSnake = () => {
   moveQueued = false
   tail.push(currentLocation)
@@ -148,13 +174,18 @@ const moveSnake = () => {
   checkCollisions(newLocation)
 
   if (alive) {
+    renderTailStart()
+
     currentLocation = newLocation
 
     if (compareLocations(currentLocation, foodLocation)) {
       eatFood()
     } else {
-      let prevTail = tail.shift()
-      clearCell(prevTail)
+      if (tail.length > tailLength) {
+        let prevTail = tail.shift()
+        clearCell(prevTail)
+      }
+      renderTailEnd()
     }
     audioSoftClick.currentTime = 0
     audioSoftClick.play()
@@ -194,8 +225,7 @@ const playGame = () => {
   document.removeEventListener('keydown', playGame)
   messageText = 'Move with the arrow keys or WASD.'
   moveSnake()
-  tickspeed =
-    tailLength < 5 ? 300 : tailLength < 10 ? 250 : tailLength < 15 ? 200 : 150
+  tickspeed = Math.max(100, 300 - 5 * tailLength)
   if (alive) setTimeout(playGame, tickspeed)
   else gameOver()
 }
@@ -204,7 +234,7 @@ const init = () => {
   createBoard()
   messageText = 'Press any key to begin.'
   tickspeed = 300
-  tailLength = 0
+  tailLength = 2
   if (!highScore) highScore = 0
   if (tail) {
     tail.forEach((cell) => clearCell(cell))
