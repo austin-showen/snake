@@ -75,7 +75,7 @@ const DIRECTIONS = {
 
 /* +-+-+-+- AUDIO -+-+-+-+ */
 const audioMove = new Audio('assets/tone1.mp3')
-audioMove.volume = 0.3
+audioMove.volume = 0.2
 const audioScore = new Audio('assets/phaserUp4.mp3')
 const audioGameOver = new Audio('assets/phaserDown3.mp3')
 
@@ -138,7 +138,7 @@ const renderShip = () => {
 }
 
 const renderMessage = () => {
-  messageEl.innerText = `Eat the food! Avoid your tail!\n${messageText}`
+  messageEl.innerText = `Collect the fuel! Avoid your trail!\n${messageText}`
 }
 
 const renderScores = () => {
@@ -259,8 +259,7 @@ const handleKeydown = (e) => {
 
   if (alive) {
     const keyCodeStr = e.keyCode.toString()
-    const validKeys = Object.keys(KEYCODES)
-    if (!validKeys.includes(keyCodeStr)) return
+    if (!KEYCODES[keyCodeStr]) return
 
     const newDirection = KEYCODES[keyCodeStr]
     if (
@@ -277,7 +276,7 @@ const handleKeydown = (e) => {
 
 const gameOver = () => {
   audioGameOver.play()
-  messageEl.innerText = `Game over! You scored ${tailLength}.\nPress R to restart.`
+  messageEl.innerText = `Game over! You scored ${score}.\nPress R to restart.`
 }
 
 const playGame = () => {

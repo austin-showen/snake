@@ -1,9 +1,8 @@
 :root {
-  --bg-color: #202020;
-  --snake-color: #CAD2C5;
-  --cell-color: #404040;
+  --bg-color: #172A3A;
+  --text-color: #F0E7D8;
+  --cell-color: #003D5B;
   --food-color: #20A4F3;
-  --text-color: #ffffff;
 }
 
 * {
@@ -15,7 +14,7 @@ body {
   background-image: url("../assets/nightsky.jpg");
   background-size: auto;
   background-color: var(--bg-color);
-  color: var(--snake-color);
+  color: var(--text-color);
   font-family: 'Comfortaa', cursive;
 }
 
@@ -34,7 +33,7 @@ body {
   align-items: center;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 50px;
-  border: 2px solid var(--snake-color);
+  border: 2px solid var(--text-color);
 }
 
 #board {
