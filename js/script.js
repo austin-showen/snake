@@ -1,11 +1,12 @@
 /**
- * Snakes in Space
+ * SnakeShip
  *
  * Author: Austin Showen
  * Date: 05/05/2023
  *
  * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
  * Sound effects: https://mixkit.co
+ * Spaceship sprite adapted from "Pixel Spaceship" by dsonyy, https://opengameart.org/content/pixel-spaceship
  **/
 
 /* +-+-+-+- CONSTANTS -+-+-+-+ */
@@ -34,8 +35,8 @@ const DIRECTIONS = {
     x: 0,
     y: -1,
     opposite: 'd',
-    rotation: 0,
-    nextDirectionRotation: {
+    shipRotation: 0,
+    tailBendRotation: {
       l: 270,
       r: 180
     }
@@ -44,8 +45,8 @@ const DIRECTIONS = {
     x: 1,
     y: 0,
     opposite: 'l',
-    rotation: 90,
-    nextDirectionRotation: {
+    shipRotation: 90,
+    tailBendRotation: {
       u: 0,
       d: 270
     }
@@ -54,8 +55,8 @@ const DIRECTIONS = {
     x: 0,
     y: 1,
     opposite: 'u',
-    rotation: 180,
-    nextDirectionRotation: {
+    shipRotation: 180,
+    tailBendRotation: {
       l: 0,
       r: 90
     }
@@ -64,8 +65,8 @@ const DIRECTIONS = {
     x: -1,
     y: 0,
     opposite: 'r',
-    rotation: 270,
-    nextDirectionRotation: {
+    shipRotation: 270,
+    tailBendRotation: {
       u: 90,
       d: 180
     }
@@ -130,21 +131,30 @@ const renderFood = () => {
   foodCellEl.style.backgroundColor = COLORS.food
 }
 
-const renderSnake = () => {
-  const snakeEl = document.querySelector(
+const renderShip = () => {
+  const shipEl = document.querySelector(
     `#r${currentLocation.y}c${currentLocation.x}`
   )
-  snakeEl.innerHTML = `<img src='../assets/ship.png' class='rotate${DIRECTIONS[currentDirection].rotation}'>`
+  shipEl.innerHTML = `<img src='../assets/ship2.png' class='rotate${DIRECTIONS[currentDirection].shipRotation}'>`
 }
 
 const renderMessage = () => {
   messageEl.innerText = `Eat the food! Avoid your tail!\n${messageText}`
 }
 
+const renderScores = () => {
+  currentScoreEl.innerText = `Score: ${score}`
+  if (score > highScore) {
+    highScore = score
+    highScoreEl.innerText = `High Score: ${highScore}`
+  }
+}
+
 const render = () => {
   renderFood()
-  renderSnake()
+  renderShip()
   renderMessage()
+  renderScores()
 }
 
 const clearCell = (loc) => {
@@ -171,11 +181,7 @@ const checkCollisions = (loc) => {
 const eatFood = () => {
   tailLength++
   score = tailLength - TAIL_START_LENGTH
-  currentScoreEl.innerText = `Score: ${score}`
-  if (score > highScore) {
-    highScore = score
-    highScoreEl.innerText = `High Score: ${highScore}`
-  }
+  renderScores()
   audioChime.currentTime = 0
   audioChime.play()
   newFood()
@@ -188,11 +194,10 @@ const renderTailStart = () => {
   let rotation
   if (prevDirection) {
     if (prevDirection === currentDirection) {
-      rotation = DIRECTIONS[currentDirection].rotation
+      rotation = DIRECTIONS[currentDirection].shipRotation
       tailStartEl.innerHTML = `<img src='../assets/ship-tail-straight.png' class='rotate${rotation}'>`
     } else {
-      rotation =
-        DIRECTIONS[prevDirection].nextDirectionRotation[currentDirection]
+      rotation = DIRECTIONS[prevDirection].tailBendRotation[currentDirection]
       tailStartEl.innerHTML = `<img src='../assets/ship-tail-turn.png' class= 'rotate${rotation}'>`
     }
   }
@@ -211,13 +216,13 @@ const renderTailEnd = () => {
       tail[1].y > tail[0].y ? (rotation = 180) : (rotation = 0)
     }
   } else {
-    rotation = DIRECTIONS[currentDirection].rotation
+    rotation = DIRECTIONS[currentDirection].shipRotation
   }
 
   tailEndEl.innerHTML = `<img src='../assets/ship-tail-end.png' class='rotate${rotation}'>`
 }
 
-const moveSnake = () => {
+const moveShip = () => {
   moveQueued = false
   tail.push(currentLocation)
   const newLocation = {
@@ -279,7 +284,7 @@ const gameOver = () => {
 const playGame = () => {
   document.removeEventListener('keydown', playGame)
   messageText = 'Move with the arrow keys or WASD.'
-  moveSnake()
+  moveShip()
   tickspeed = Math.max(100, TICKSPEED_START - 5 * tailLength)
   if (alive) setTimeout(playGame, tickspeed)
   else gameOver()
