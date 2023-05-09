@@ -236,6 +236,8 @@ const renderTailEnd = () => {
 }
 
 const moveShip = () => {
+  if (pause) return
+
   moveQueued = false
   tail.push(currentLocation)
   const newLocation = {
@@ -284,6 +286,7 @@ const toggleMute = () => {
 
 handleInput = (input) => {
   if (pause && input.length === 1) return
+  if (!alive && input !== 'reset') return
 
   if (input === 'pause') togglePause()
   else if (input === 'reset') init()
