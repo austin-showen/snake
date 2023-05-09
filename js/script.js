@@ -30,7 +30,10 @@ const KEYCODES = {
   40: 'd',
   83: 'd',
   37: 'l',
-  65: 'l'
+  65: 'l',
+  82: 'reset',
+  77: 'mute',
+  80: 'pause'
 }
 
 const DIRECTIONS = {
@@ -131,7 +134,7 @@ const renderFood = () => {
   const foodCellEl = document.querySelector(
     `#r${foodLocation.y}c${foodLocation.x}`
   )
-  foodCellEl.style.backgroundColor = COLORS.food
+  foodCellEl.style.backgroundImage = 'url(../assets/energy.gif)'
 }
 
 const renderShip = () => {
@@ -163,6 +166,7 @@ const render = () => {
 const clearCell = (loc) => {
   const cellEl = document.querySelector(`#r${loc.y}c${loc.x}`)
   cellEl.style.backgroundColor = COLORS.cell
+  cellEl.style.removeProperty('background-image')
   cellEl.innerHTML = ''
 }
 
@@ -206,6 +210,8 @@ const renderTailStart = () => {
       tailStartEl.innerHTML = `<img src='/assets/ship-tail-turn.png' class='rotate${rotation}'>`
     }
   }
+
+  tailStartEl.style.zIndex = '1'
 }
 
 const renderTailEnd = () => {
@@ -265,18 +271,12 @@ const toggleMute = () => {
   document.querySelector('#mute').innerText = mute ? 'M to unmute' : 'M to mute'
 }
 
-const handleKeydown = (e) => {
-  if (moveQueued) return
-
-  if (e.keyCode === 82) init()
-
-  if (e.keyCode === 77) toggleMute()
-
-  if (alive) {
-    const keyCodeStr = e.keyCode.toString()
-    if (!KEYCODES[keyCodeStr]) return
-
-    const newDirection = KEYCODES[keyCodeStr]
+handleInput = (input) => {
+  if (input === 'reset') init()
+  else if (input === 'mute') toggleMute()
+  else if (input === 'pause') return
+  else if (alive) {
+    const newDirection = input
     if (
       newDirection === currentDirection ||
       newDirection === DIRECTIONS[currentDirection].opposite
@@ -287,6 +287,13 @@ const handleKeydown = (e) => {
       currentDirection = newDirection
     }
   }
+}
+
+const handleKeydown = (e) => {
+  if (moveQueued) return
+  const keyCodeStr = e.keyCode.toString()
+  if (!KEYCODES[keyCodeStr]) return
+  handleInput(KEYCODES[keyCodeStr])
 }
 
 const gameOver = () => {
