@@ -7,6 +7,7 @@
  * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
  * Sound effects by Kenney.nl, https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc
  * Spaceship sprite adapted from "Pixel Spaceship" by dsonyy, https://opengameart.org/content/pixel-spaceship
+ * Pause icon by Icons8, https://icons8.com
  **/
 
 /* +-+-+-+- CONSTANTS -+-+-+-+ */
@@ -146,7 +147,7 @@ const renderShip = () => {
 }
 
 const renderMessage = () => {
-  messageEl.innerText = `Collect the fuel! Avoid your trail!\n${messageText}`
+  messageEl.innerText = `Collect the energy! Avoid your trail!\n${messageText}`
 }
 
 const renderScores = () => {
@@ -272,6 +273,7 @@ const togglePause = () => {
   document.querySelector('#pause').innerText = pause
     ? 'P to resume'
     : 'P to pause'
+  document.querySelector('#pause-icon').style.opacity = pause ? '80%' : '0'
   if (!pause) playGame()
 }
 

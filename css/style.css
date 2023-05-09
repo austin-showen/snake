@@ -43,6 +43,7 @@ a:hover {
   background: rgba(0, 0, 0, 0.6);
   border-radius: 50px;
   border: 2px solid var(--text-color);
+  position: relative;
 }
 
 #board {
@@ -95,6 +96,14 @@ footer>div {
   margin-bottom: 30px;
   text-align: center;
   line-height: 40px;
+}
+
+#pause-icon {
+  position: absolute;
+  top: 261px;
+  filter: drop-shadow(0 0 5px var(--text-color));
+  opacity: 0;
+  z-index: 1;
 }
 
 .rotate0 {
