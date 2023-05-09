@@ -99,6 +99,7 @@ let moveQueued
 let tickspeed
 let messageText
 let mute
+let pause
 
 /* +-+-+-+- HTML ELEMENTS -+-+-+-+ */
 const boardEl = document.querySelector('#board')
@@ -266,15 +267,25 @@ const moveShip = () => {
   }
 }
 
+const togglePause = () => {
+  pause = !pause
+  document.querySelector('#pause').innerText = pause
+    ? 'P to resume'
+    : 'P to pause'
+  if (!pause) playGame()
+}
+
 const toggleMute = () => {
   mute = !mute
   document.querySelector('#mute').innerText = mute ? 'M to unmute' : 'M to mute'
 }
 
 handleInput = (input) => {
-  if (input === 'reset') init()
+  if (pause && input.length === 1) return
+
+  if (input === 'pause') togglePause()
+  else if (input === 'reset') init()
   else if (input === 'mute') toggleMute()
-  else if (input === 'pause') return
   else if (alive) {
     const newDirection = input
     if (
@@ -306,8 +317,10 @@ const playGame = () => {
   messageText = 'Move with the arrow keys or WASD.'
   moveShip()
   tickspeed = Math.max(100, TICKSPEED_START - 5 * tailLength)
-  if (alive) setTimeout(playGame, tickspeed)
-  else gameOver()
+  if (!pause) {
+    if (alive) setTimeout(playGame, tickspeed)
+    else gameOver()
+  }
 }
 
 const init = () => {
@@ -318,6 +331,7 @@ const init = () => {
   score = 0
   if (!highScore) highScore = 0
   if (!mute) mute = false
+  pause = false
   if (tail) {
     tail.forEach((cell) => clearCell(cell))
   }
