@@ -98,7 +98,6 @@ let highScore
 let alive
 let moveQueued
 let tickspeed
-let messageText
 let mute
 let pause
 
@@ -147,10 +146,6 @@ const renderShip = () => {
   shipEl.innerHTML = `<img src='../assets/ship.png' class='rotate${DIRECTIONS[currentDirection].shipRotation}'>`
 }
 
-// const renderMessage = () => {
-//   messageEl.innerText = `Collect the energy! Avoid your trail!\n${messageText}`
-// }
-
 const renderScores = () => {
   currentScoreEl.innerText = `Score: ${score}`
   if (score > highScore) {
@@ -162,7 +157,6 @@ const renderScores = () => {
 const render = () => {
   renderFood()
   renderShip()
-  // renderMessage()
   renderScores()
 }
 
@@ -277,7 +271,7 @@ const togglePause = () => {
     ? 'P to resume'
     : 'P to pause'
   document.querySelector('#pause-icon').style.opacity = pause ? '80%' : '0'
-  if (!pause) playGame()
+  if (!pause) gameLoop()
 }
 
 const toggleMute = () => {
@@ -321,24 +315,27 @@ const handleKeydown = (e) => {
 
 const gameOver = () => {
   if (!mute) audioGameOver.play()
-  // messageEl.innerText = `Game over! You scored ${score}.\nPress R to restart.`
+  messageEl.innerText = `Game over! You scored ${score}.\nPress R to restart.`
+}
+
+const gameLoop = () => {
+  moveShip()
+  tickspeed = Math.max(100, TICKSPEED_START - 5 * tailLength)
+  if (!pause) {
+    if (alive) setTimeout(gameLoop, tickspeed)
+    else gameOver()
+  }
 }
 
 const playGame = () => {
   document.removeEventListener('keydown', playGame)
   controlEl.removeEventListener('click', playGame)
-  messageText = 'Move with the arrow keys or WASD.'
-  moveShip()
-  tickspeed = Math.max(100, TICKSPEED_START - 5 * tailLength)
-  if (!pause) {
-    if (alive) setTimeout(playGame, tickspeed)
-    else gameOver()
-  }
+  messageEl.innerText = ''
+  gameLoop()
 }
 
 const init = () => {
   createBoard()
-  messageText = 'Press any key to begin.'
   tickspeed = TICKSPEED_START
   tailLength = TAIL_START_LENGTH
   score = 0
@@ -355,6 +352,7 @@ const init = () => {
   }
   currentDirection = 'r'
   alive = true
+  messageEl.innerText = `Collect the energy! Avoid your trail!\nPress any key to begin.`
   newFood()
   render()
   document.addEventListener('keydown', playGame)
