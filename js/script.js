@@ -7,7 +7,7 @@
  * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
  * Sound effects by Kenney.nl, https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc
  * Spaceship sprite adapted from "Pixel Spaceship" by dsonyy, https://opengameart.org/content/pixel-spaceship
- * Pause icon by Icons8, https://icons8.com
+ * Icons: GUI Pack by trezegames, https://opengameart.org/content/gui-pack
  **/
 
 /* +-+-+-+- CONSTANTS -+-+-+-+ */
@@ -16,12 +16,6 @@ const WIDTH = 13
 const HEIGHT = 13
 const TAIL_START_LENGTH = 2
 const TICKSPEED_START = 300
-
-const COLORS = {
-  snake: 'var(--snake-color)',
-  food: 'var(--food-color)',
-  cell: 'var(--cell-color)'
-}
 
 const KEYCODES = {
   38: 'u',
@@ -92,7 +86,7 @@ let currentDirection
 let prevDirection
 let currentLocation
 let tail
-let foodLocation
+let energyLocation
 let score
 let highScore
 let alive
@@ -107,6 +101,7 @@ const currentScoreEl = document.querySelector('#current-score')
 const highScoreEl = document.querySelector('#high-score')
 const messageEl = document.querySelector('#message')
 const controlEl = document.querySelector('#controls')
+const resetEl = document.querySelector('#reset')
 
 /* +-+-+-+- FUNCTIONS -+-+-+-+ */
 
@@ -116,27 +111,27 @@ const createBoard = () => {
     for (let col = 0; col < HEIGHT; col++) {
       const newCell = document.createElement('div')
       newCell.id = `r${row}c${col}`
-      newCell.style.backgroundColor = COLORS.cell
+      newCell.style.backgroundColor = 'var(--cell-color)'
       boardEl.appendChild(newCell)
     }
   }
 }
 
-const newFood = () => {
-  if (foodLocation) clearCell(foodLocation)
-  const foodRow = Math.floor(Math.random() * HEIGHT)
-  const foodCol = Math.floor(Math.random() * WIDTH)
-  foodLocation = {
-    x: foodCol,
-    y: foodRow
+const newEnergy = () => {
+  if (energyLocation) clearCell(energyLocation)
+  const energyRow = Math.floor(Math.random() * HEIGHT)
+  const energyCol = Math.floor(Math.random() * WIDTH)
+  energyLocation = {
+    x: energyCol,
+    y: energyRow
   }
 }
 
-const renderFood = () => {
-  const foodCellEl = document.querySelector(
-    `#r${foodLocation.y}c${foodLocation.x}`
+const renderEnergy = () => {
+  const energyCellEl = document.querySelector(
+    `#r${energyLocation.y}c${energyLocation.x}`
   )
-  foodCellEl.style.backgroundImage = 'url(../assets/energy.gif)'
+  energyCellEl.style.backgroundImage = 'url(../assets/energy.gif)'
 }
 
 const renderShip = () => {
@@ -155,14 +150,13 @@ const renderScores = () => {
 }
 
 const render = () => {
-  renderFood()
+  renderEnergy()
   renderShip()
   renderScores()
 }
 
 const clearCell = (loc) => {
   const cellEl = document.querySelector(`#r${loc.y}c${loc.x}`)
-  cellEl.style.backgroundColor = COLORS.cell
   cellEl.style.removeProperty('background-image')
   cellEl.innerHTML = ''
 }
@@ -182,7 +176,7 @@ const checkCollisions = (loc) => {
   })
 }
 
-const eatFood = () => {
+const pickUpEnergy = () => {
   tailLength++
   score = tailLength - TAIL_START_LENGTH
   renderScores()
@@ -190,7 +184,7 @@ const eatFood = () => {
     audioScore.currentTime = 0
     audioScore.play()
   }
-  newFood()
+  newEnergy()
 }
 
 const renderTailStart = () => {
@@ -250,8 +244,8 @@ const moveShip = () => {
 
     currentLocation = newLocation
 
-    if (compareLocations(currentLocation, foodLocation)) {
-      eatFood()
+    if (compareLocations(currentLocation, energyLocation)) {
+      pickUpEnergy()
     } else {
       if (tail.length > tailLength) {
         let prevTail = tail.shift()
@@ -269,16 +263,34 @@ const moveShip = () => {
 
 const togglePause = () => {
   pause = !pause
-  document.querySelector('#pause').innerText = pause
-    ? 'P to resume'
-    : 'P to pause'
-  document.querySelector('#pause-icon').style.opacity = pause ? '80%' : '0'
-  if (!pause) gameLoop()
+  const pauseMessageEl = document.querySelector('#pause-message')
+  const pauseIconEl = document.querySelector('#pause-icon')
+  const pauseEl = document.querySelector('#pause')
+  if (pause) {
+    pauseMessageEl.innerText = 'P to resume'
+    pauseEl.style.opacity = '100%'
+    pauseIconEl.style.opacity = '80%'
+  } else {
+    pauseMessageEl.innerText = 'P to pause'
+    pauseEl.style.opacity = '70%'
+    pauseIconEl.style.opacity = '0'
+    gameLoop()
+  }
 }
 
 const toggleMute = () => {
   mute = !mute
-  document.querySelector('#mute').innerText = mute ? 'M to unmute' : 'M to mute'
+  const muteMessageEl = document.querySelector('#mute-message')
+  const muteEl = document.querySelector('#mute')
+  if (mute) {
+    muteMessageEl.innerText = 'M to unmute'
+    muteEl.src = 'assets/soundOff.png'
+    muteEl.style.opacity = '70%'
+  } else {
+    muteMessageEl.innerText = 'M to mute'
+    muteEl.src = 'assets/soundOn.png'
+    muteEl.style.opacity = '100%'
+  }
 }
 
 const highlightArrow = (direction) => {
@@ -297,6 +309,7 @@ const highlightArrow = (direction) => {
 
 handleInput = (input) => {
   if (pause && input.length === 1) return
+  if (alive && input === 'reset') return
   if (!alive && input !== 'reset') return
 
   if (input === 'pause') togglePause()
@@ -331,9 +344,13 @@ const handleKeydown = (e) => {
 
 const gameOver = () => {
   if (!mute) audioGameOver.play()
+
   const activeArrowEl = document.querySelector(`#${currentDirection}`)
   activeArrowEl.src = 'assets/arrow.png'
   activeArrowEl.classList.remove('highlight')
+
+  resetEl.style.opacity = '100%'
+
   messageEl.innerText = `Game over! You scored ${score}.\nPress R to restart.`
 }
 
@@ -372,7 +389,8 @@ const init = () => {
   currentDirection = 'r'
   alive = true
   messageEl.innerText = `Collect the energy! Avoid your trail!\nPress any key to begin.`
-  newFood()
+  resetEl.style.opacity = '70%'
+  newEnergy()
   render()
   document.addEventListener('keydown', playGame)
   controlEl.addEventListener('click', playGame)

@@ -2,7 +2,7 @@
   --bg-color: #172A3A;
   --text-color: #F0E7D8;
   --cell-color: #003D5B;
-  --food-color: #20A4F3;
+  --highlight-color: #20A4F3;
 }
 
 * {
@@ -21,7 +21,7 @@ body {
 
 a,
 a:visited {
-  color: var(--food-color)
+  color: var(--highlight-color)
 }
 
 a:hover {
@@ -86,7 +86,7 @@ footer>div {
 }
 
 p {
-  margin: 30px;
+  margin: 20px;
 }
 
 #container-scores {
@@ -109,13 +109,42 @@ p {
 
 #pause-icon {
   position: absolute;
-  top: 233px;
+  top: 272px;
   filter: drop-shadow(0 0 5px var(--text-color));
   opacity: 0;
   z-index: 1;
 }
 
 #controls {
+  width: 90%;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30px;
+}
+
+#control-mute {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 80px;
+}
+
+#control-pause-reset {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 80px;
+}
+
+#pause {
+  opacity: 70%;
+}
+
+#reset {
+  opacity: 70%;
+}
+
+#control-arrows {
   display: grid;
   grid-template-columns: repeat(3, 45px);
   grid-template-rows: repeat(3, 45px);
@@ -126,10 +155,10 @@ p {
   border-radius: 20px;
   padding: 10px;
   background-color: rgba(0, 0, 0, 0.35);
-  margin-bottom: 30px;
+  margin: 20px 0;
 }
 
-#controls>div:hover {
+#control-arrows>div:hover {
   transform: scale(1.1);
   transition: transform 150ms ease-in;
 }
@@ -155,6 +184,11 @@ p {
   grid-template-columns: repeat(13, 29px);
 }
 
+#rules {
+  text-align: center;
+  margin: 20px;
+}
+
 .rotate0 {
   transform: rotate(0deg);
 }
@@ -172,5 +206,5 @@ p {
 }
 
 .highlight {
-  filter: drop-shadow(0 0 5px var(--food-color));
+  filter: drop-shadow(0 0 5px var(--highlight-color));
 }
