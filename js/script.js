@@ -331,6 +331,9 @@ const handleKeydown = (e) => {
 
 const gameOver = () => {
   if (!mute) audioGameOver.play()
+  const activeArrowEl = document.querySelector(`#${currentDirection}`)
+  activeArrowEl.src = 'assets/arrow.png'
+  activeArrowEl.classList.remove('highlight')
   messageEl.innerText = `Game over! You scored ${score}.\nPress R to restart.`
 }
 

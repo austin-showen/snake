@@ -12,7 +12,8 @@
 
 body {
   background-image: url("../assets/nightsky.jpg");
-  background-size: cover;
+  background-size: auto;
+  background-repeat: no-repeat;
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: 'Comfortaa', cursive;
@@ -44,6 +45,7 @@ a:hover {
   border-radius: 50px;
   border: 2px solid var(--text-color);
   position: relative;
+  max-width: 500px;
 }
 
 #board {
@@ -81,6 +83,10 @@ footer {
 footer>div {
   width: 110px;
   text-align: center;
+}
+
+p {
+  margin: 30px;
 }
 
 #container-scores {
@@ -142,6 +148,11 @@ footer>div {
 
 #right-arrow {
   grid-column-start: 3;
+}
+
+#horizontal-rule {
+  display: grid;
+  grid-template-columns: repeat(13, 29px);
 }
 
 .rotate0 {
