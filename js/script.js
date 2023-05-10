@@ -306,6 +306,12 @@ handleInput = (input) => {
   }
 }
 
+const handleClick = (e) => {
+  if (moveQueued) return
+  if (e.target.tagName !== 'IMG') return
+  handleInput(e.target.id)
+}
+
 const handleKeydown = (e) => {
   if (moveQueued) return
   const keyCodeStr = e.keyCode.toString()
@@ -315,11 +321,12 @@ const handleKeydown = (e) => {
 
 const gameOver = () => {
   if (!mute) audioGameOver.play()
-  messageEl.innerText = `Game over! You scored ${score}.\nPress R to restart.`
+  // messageEl.innerText = `Game over! You scored ${score}.\nPress R to restart.`
 }
 
 const playGame = () => {
   document.removeEventListener('keydown', playGame)
+  controlEl.removeEventListener('click', playGame)
   messageText = 'Move with the arrow keys or WASD.'
   moveShip()
   tickspeed = Math.max(100, TICKSPEED_START - 5 * tailLength)
@@ -351,12 +358,13 @@ const init = () => {
   newFood()
   render()
   document.addEventListener('keydown', playGame)
+  controlEl.addEventListener('click', playGame)
 }
 
 /* +-+-+-+- EVENT LISTENERS -+-+-+-+ */
 
 document.addEventListener('keydown', handleKeydown)
-// controlEl.addEventListener('click', handleClick)
+controlEl.addEventListener('click', handleClick)
 
 /* +-+-+-+- INITIALIZATION -+-+-+-+ */
 
