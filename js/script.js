@@ -7,6 +7,7 @@
  * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
  * Sound effects by Kenney.nl, https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc
  * Spaceship sprite adapted from "Pixel Spaceship" by dsonyy, https://opengameart.org/content/pixel-spaceship
+ * Energy sprite: Free Pixel Effects Pack by CodeManu, https://opengameart.org/content/free-pixel-effects-pack
  * Icons: GUI Pack by trezegames, https://opengameart.org/content/gui-pack
  **/
 
@@ -105,6 +106,7 @@ const resetEl = document.querySelector('#reset')
 
 /* +-+-+-+- FUNCTIONS -+-+-+-+ */
 
+/* --- Render Functions --- */
 const createBoard = () => {
   boardEl.innerHTML = ''
   for (let row = 0; row < WIDTH; row++) {
@@ -114,16 +116,6 @@ const createBoard = () => {
       newCell.style.backgroundColor = 'var(--cell-color)'
       boardEl.appendChild(newCell)
     }
-  }
-}
-
-const newEnergy = () => {
-  if (energyLocation) clearCell(energyLocation)
-  const energyRow = Math.floor(Math.random() * HEIGHT)
-  const energyCol = Math.floor(Math.random() * WIDTH)
-  energyLocation = {
-    x: energyCol,
-    y: energyRow
   }
 }
 
@@ -155,11 +147,47 @@ const render = () => {
   renderScores()
 }
 
+const renderTailStart = () => {
+  const tailStart = tail[tail.length - 1]
+  const tailStartEl = document.querySelector(`#r${tailStart.y}c${tailStart.x}`)
+
+  let rotation
+  if (prevDirection) {
+    if (prevDirection === currentDirection) {
+      rotation = DIRECTIONS[currentDirection].shipRotation
+      tailStartEl.innerHTML = `<img src='/assets/ship-tail-straight.png' class='rotate${rotation}'>`
+    } else {
+      rotation = DIRECTIONS[prevDirection].tailBendRotation[currentDirection]
+      tailStartEl.innerHTML = `<img src='/assets/ship-tail-turn.png' class='rotate${rotation}'>`
+    }
+  }
+}
+
+const renderTailEnd = () => {
+  const tailEnd = tail[0]
+  const tailEndEl = document.querySelector(`#r${tailEnd.y}c${tailEnd.x}`)
+
+  let rotation
+  if (tail[1]) {
+    if (tail[1].y === tail[0].y) {
+      tail[1].x > tail[0].x ? (rotation = 90) : (rotation = 270)
+    } else {
+      tail[1].y > tail[0].y ? (rotation = 180) : (rotation = 0)
+    }
+  } else {
+    rotation = DIRECTIONS[currentDirection].shipRotation
+  }
+
+  tailEndEl.innerHTML = `<img src='/assets/ship-tail-end.png' class='rotate${rotation}'>`
+}
+
 const clearCell = (loc) => {
   const cellEl = document.querySelector(`#r${loc.y}c${loc.x}`)
   cellEl.style.removeProperty('background-image')
   cellEl.innerHTML = ''
 }
+
+/* --- Game Logic Functions --- */
 
 const compareLocations = (loc1, loc2) => {
   return loc1.x === loc2.x && loc1.y === loc2.y
@@ -176,6 +204,16 @@ const checkCollisions = (loc) => {
   })
 }
 
+const newEnergy = () => {
+  if (energyLocation) clearCell(energyLocation)
+  const energyRow = Math.floor(Math.random() * HEIGHT)
+  const energyCol = Math.floor(Math.random() * WIDTH)
+  energyLocation = {
+    x: energyCol,
+    y: energyRow
+  }
+}
+
 const pickUpEnergy = () => {
   tailLength++
   score = tailLength - TAIL_START_LENGTH
@@ -185,43 +223,6 @@ const pickUpEnergy = () => {
     audioScore.play()
   }
   newEnergy()
-}
-
-const renderTailStart = () => {
-  const tailStart = tail[tail.length - 1]
-  const tailStartEl = document.querySelector(`#r${tailStart.y}c${tailStart.x}`)
-
-  let rotation
-  if (prevDirection) {
-    if (prevDirection === currentDirection) {
-      rotation = DIRECTIONS[currentDirection].shipRotation
-      tailStartEl.innerHTML = `<img src='/assets/ship-tail-straight.png' class='rotate${rotation}'>`
-    } else {
-      rotation = DIRECTIONS[prevDirection].tailBendRotation[currentDirection]
-      tailStartEl.innerHTML = `<img src='/assets/ship-tail-turn.png' class='rotate${rotation}'>`
-    }
-  }
-
-  tailStartEl.style.zIndex = '1'
-}
-
-const renderTailEnd = () => {
-  const tailEnd = tail[0]
-  const tailEndEl = document.querySelector(`#r${tailEnd.y}c${tailEnd.x}`)
-
-  let rotation
-
-  if (tail[1]) {
-    if (tail[1].y === tail[0].y) {
-      tail[1].x > tail[0].x ? (rotation = 90) : (rotation = 270)
-    } else {
-      tail[1].y > tail[0].y ? (rotation = 180) : (rotation = 0)
-    }
-  } else {
-    rotation = DIRECTIONS[currentDirection].shipRotation
-  }
-
-  tailEndEl.innerHTML = `<img src='/assets/ship-tail-end.png' class='rotate${rotation}'>`
 }
 
 const moveShip = () => {
@@ -307,6 +308,8 @@ const highlightArrow = (direction) => {
   })
 }
 
+/* --- Event Handlers --- */
+
 handleInput = (input) => {
   if (pause && input.length === 1) return
   if (alive && input === 'reset') return
@@ -342,6 +345,8 @@ const handleKeydown = (e) => {
   handleInput(KEYCODES[keyCodeStr])
 }
 
+/* --- Game Controller Funtions --- */
+
 const gameOver = () => {
   if (!mute) audioGameOver.play()
 
@@ -370,27 +375,42 @@ const playGame = () => {
   gameLoop()
 }
 
-const init = () => {
-  createBoard()
+/* --- Initialization Functions --- */
+
+const initValues = () => {
   tickspeed = TICKSPEED_START
   tailLength = TAIL_START_LENGTH
   score = 0
   if (!highScore) highScore = 0
   if (!mute) mute = false
   pause = false
+  alive = true
+  currentDirection = 'r'
+}
+
+const initTail = () => {
   if (tail) {
     tail.forEach((cell) => clearCell(cell))
   }
   tail = []
+}
+
+const initStyles = () => {
+  messageEl.innerText = `Collect the energy! Avoid your trail!\nPress any key to begin.`
+  resetEl.style.opacity = '70%'
+}
+
+const init = () => {
+  createBoard()
+  initValues()
+  initTail()
+  initStyles()
+  newEnergy()
   currentLocation = {
     x: Math.floor(WIDTH / 2),
     y: Math.floor(HEIGHT / 2)
   }
-  currentDirection = 'r'
-  alive = true
-  messageEl.innerText = `Collect the energy! Avoid your trail!\nPress any key to begin.`
-  resetEl.style.opacity = '70%'
-  newEnergy()
+
   render()
   document.addEventListener('keydown', playGame)
   controlEl.addEventListener('click', playGame)
