@@ -12,8 +12,8 @@
 
 /* +-+-+-+- CONSTANTS -+-+-+-+ */
 
-const WIDTH = 15
-const HEIGHT = 15
+const WIDTH = 13
+const HEIGHT = 13
 const TAIL_START_LENGTH = 2
 const TICKSPEED_START = 300
 
@@ -107,6 +107,7 @@ const boardEl = document.querySelector('#board')
 const currentScoreEl = document.querySelector('#current-score')
 const highScoreEl = document.querySelector('#high-score')
 const messageEl = document.querySelector('#message')
+const controlEl = document.querySelector('#controls')
 
 /* +-+-+-+- FUNCTIONS -+-+-+-+ */
 
@@ -146,9 +147,9 @@ const renderShip = () => {
   shipEl.innerHTML = `<img src='../assets/ship.png' class='rotate${DIRECTIONS[currentDirection].shipRotation}'>`
 }
 
-const renderMessage = () => {
-  messageEl.innerText = `Collect the energy! Avoid your trail!\n${messageText}`
-}
+// const renderMessage = () => {
+//   messageEl.innerText = `Collect the energy! Avoid your trail!\n${messageText}`
+// }
 
 const renderScores = () => {
   currentScoreEl.innerText = `Score: ${score}`
@@ -161,7 +162,7 @@ const renderScores = () => {
 const render = () => {
   renderFood()
   renderShip()
-  renderMessage()
+  // renderMessage()
   renderScores()
 }
 
@@ -355,6 +356,7 @@ const init = () => {
 /* +-+-+-+- EVENT LISTENERS -+-+-+-+ */
 
 document.addEventListener('keydown', handleKeydown)
+// controlEl.addEventListener('click', handleClick)
 
 /* +-+-+-+- INITIALIZATION -+-+-+-+ */
 
