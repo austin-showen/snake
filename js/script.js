@@ -233,6 +233,8 @@ const renderTailEnd = () => {
 const moveShip = () => {
   if (pause) return
 
+  highlightArrow(currentDirection)
+
   moveQueued = false
   tail.push(currentLocation)
   const newLocation = {
@@ -277,6 +279,20 @@ const togglePause = () => {
 const toggleMute = () => {
   mute = !mute
   document.querySelector('#mute').innerText = mute ? 'M to unmute' : 'M to mute'
+}
+
+const highlightArrow = (direction) => {
+  const arrowIds = ['u', 'r', 'l', 'd']
+  arrowIds.forEach((id) => {
+    const arrowEl = document.querySelector(`#${id}`)
+    if (id === direction) {
+      arrowEl.src = 'assets/arrow-blue.png'
+      arrowEl.classList.add('highlight')
+    } else {
+      arrowEl.src = 'assets/arrow.png'
+      arrowEl.classList.remove('highlight')
+    }
+  })
 }
 
 handleInput = (input) => {

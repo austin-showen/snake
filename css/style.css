@@ -111,8 +111,8 @@ footer>div {
 
 #controls {
   display: grid;
-  grid-template-columns: 65px 45px 65px;
-  grid-template-rows: 65px 45px 65px;
+  grid-template-columns: repeat(3, 45px);
+  grid-template-rows: repeat(3, 45px);
   gap: 3px;
   align-items: center;
   justify-items: center;
@@ -158,4 +158,8 @@ footer>div {
 
 .rotate270 {
   transform: rotate(270deg);
+}
+
+.highlight {
+  filter: drop-shadow(0 0 5px var(--food-color));
 }
