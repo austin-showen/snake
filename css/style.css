@@ -8,6 +8,7 @@
 * {
   margin: 0;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 body {
@@ -45,7 +46,7 @@ a:hover {
   border-radius: 50px;
   border: 2px solid var(--text-color);
   position: relative;
-  width: 600px;
+  width: 650px;
 }
 
 #board {
@@ -180,14 +181,30 @@ p {
   grid-column-start: 3;
 }
 
-#horizontal-rule {
-  display: grid;
-  grid-template-columns: repeat(13, 29px);
-}
-
 #rules {
   text-align: center;
-  margin: 20px;
+  margin-bottom: 20px;
+}
+
+#about-me {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.horizontal-rule {
+  margin-bottom: 20px;
+}
+
+li {
+  font-style: italic;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
 }
 
 .rotate0 {
