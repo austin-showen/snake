@@ -97,6 +97,7 @@ let mute
 let pause
 let tail
 let asteroids
+let shipSprite
 
 /* +-+-+-+- HTML ELEMENTS -+-+-+-+ */
 const boardEl = document.querySelector('#board')
@@ -132,7 +133,7 @@ const renderEnergy = () => {
 
 const renderShip = () => {
   const shipEl = getElement(currentLocation)
-  shipEl.innerHTML = `<img src='../assets/ship.png' class='rotate${DIRECTIONS[currentDirection].shipRotation}'>`
+  shipEl.innerHTML = `<img src='${shipSprite}' class='rotate${DIRECTIONS[currentDirection].shipRotation}'>`
 }
 
 const renderScores = () => {
@@ -227,12 +228,9 @@ const getRandomLocation = () => {
 }
 
 const newAsteroid = () => {
-  console.log('new asteroid')
   let asteroidLocation = getRandomLocation()
   let asteroidEl = getElement(asteroidLocation)
-  console.log(asteroidEl)
   while (asteroidEl.style.backgroundImage) {
-    console.log('.')
     asteroidLocation = getRandomLocation()
     asteroidEl = getElement(asteroidLocation)
   }
@@ -407,6 +405,7 @@ const gameLoop = () => {
 const playGame = () => {
   document.removeEventListener('keydown', playGame)
   controlEl.removeEventListener('click', playGame)
+  shipSprite = '../assets/ship.png'
   messageEl.innerText = ''
   gameLoop()
 }
@@ -441,6 +440,7 @@ const initAsteroids = () => {
 const initStyles = () => {
   messageEl.innerText = `Collect the energy! Avoid your trail!\nPress any key to begin.`
   resetEl.style.opacity = '50%'
+  shipSprite = '../assets/ship_start.png'
 }
 
 const init = () => {

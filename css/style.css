@@ -45,7 +45,7 @@ a:hover {
   border-radius: 50px;
   border: 2px solid var(--text-color);
   position: relative;
-  max-width: 500px;
+  width: 600px;
 }
 
 #board {
