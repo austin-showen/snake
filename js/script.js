@@ -2,7 +2,7 @@
  * SnakeShip
  *
  * Author: Austin Showen
- * Date: 05/05/2023
+ * Date: 05/12/2023
  *
  * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
  * Sound effects by Kenney.nl, https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc
@@ -205,16 +205,31 @@ const compareLocations = (loc1, loc2) => {
 }
 
 const checkCollisions = (loc) => {
-  if (loc.y < 0 || loc.y >= HEIGHT || loc.x < 0 || loc.x >= WIDTH) {
+  const currentLocationEl = getElement(currentLocation)
+  const nextLocationEl = getElement(loc)
+
+  const collide = () => {
     alive = false
+    currentLocationEl.style.backgroundColor = 'red'
+    if (nextLocationEl) nextLocationEl.style.backgroundColor = 'red'
   }
+
+  if (loc.y < 0 || loc.y >= HEIGHT || loc.x < 0 || loc.x >= WIDTH) {
+    collide()
+  }
+
   tail.forEach((tailCell, idx) => {
     if (idx !== 0) {
-      if (compareLocations(tailCell, loc)) alive = false
+      if (compareLocations(tailCell, loc)) {
+        collide()
+      }
     }
   })
+
   asteroids.forEach((asteroidCell) => {
-    if (compareLocations(asteroidCell, loc)) alive = false
+    if (compareLocations(asteroidCell, loc)) {
+      collide()
+    }
   })
 }
 
@@ -230,21 +245,26 @@ const getRandomLocation = () => {
 const newAsteroid = () => {
   let asteroidLocation = getRandomLocation()
   let asteroidEl = getElement(asteroidLocation)
+
   while (asteroidEl.style.backgroundImage) {
     asteroidLocation = getRandomLocation()
     asteroidEl = getElement(asteroidLocation)
   }
+
   asteroids.push(asteroidLocation)
 }
 
 const newEnergy = () => {
   if (energyLocation) clearCell(energyLocation)
+
   energyLocation = getRandomLocation()
   let energyEl = getElement(energyLocation)
+
   while (energyEl.style.backgroundImage) {
     energyLocation = getRandomLocation()
     energyEl = getElement(energyLocation)
   }
+
   if (score && score % 5 === 0) newAsteroid()
 }
 
@@ -262,8 +282,6 @@ const pickUpEnergy = () => {
 const moveShip = () => {
   if (pause) return
 
-  highlightArrow(currentDirection)
-
   moveQueued = false
   tail.push(currentLocation)
   const newLocation = {
@@ -272,11 +290,9 @@ const moveShip = () => {
   }
 
   checkCollisions(newLocation)
-
   if (alive) {
     renderTailStart()
     prevDirection = currentDirection
-
     currentLocation = newLocation
 
     if (compareLocations(currentLocation, energyLocation)) {
@@ -288,10 +304,12 @@ const moveShip = () => {
       }
       renderTailEnd()
     }
+
     if (!mute) {
       audioMove.currentTime = 0
       audioMove.play()
     }
+
     render()
   }
 }
@@ -345,23 +363,23 @@ const highlightArrow = (direction) => {
 /* --- Event Handlers --- */
 
 handleInput = (input) => {
-  if (pause && input.length === 1) return
-  if (alive && input === 'reset') return
-  if (!alive && input !== 'reset') return
+  if (
+    (pause && input.length === 1) ||
+    (alive && input === 'reset') ||
+    (!alive && input !== 'reset')
+  )
+    return
 
   if (input === 'pause') togglePause()
   else if (input === 'reset') init()
   else if (input === 'mute') toggleMute()
   else if (alive) {
     const newDirection = input
-    if (
-      newDirection === currentDirection ||
-      newDirection === DIRECTIONS[currentDirection].opposite
-    )
-      return
+    if (newDirection === DIRECTIONS[currentDirection].opposite) return
     else {
       moveQueued = true
       currentDirection = newDirection
+      highlightArrow(currentDirection)
     }
   }
 }
