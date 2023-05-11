@@ -95,6 +95,7 @@ let moveQueued
 let tickspeed
 let mute
 let pause
+let asteroids
 
 /* +-+-+-+- HTML ELEMENTS -+-+-+-+ */
 const boardEl = document.querySelector('#board')
@@ -141,10 +142,18 @@ const renderScores = () => {
   }
 }
 
+const renderAsteroids = () => {
+  asteroids.forEach((location) => {
+    const asteroidEl = document.querySelector(`#r${location.y}c${location.x}`)
+    asteroidEl.style.backgroundImage = 'url(../assets/asteroid.png)'
+  })
+}
+
 const render = () => {
   renderEnergy()
   renderShip()
   renderScores()
+  renderAsteroids()
 }
 
 const renderTailStart = () => {
@@ -202,16 +211,39 @@ const checkCollisions = (loc) => {
       if (compareLocations(tailCell, loc)) alive = false
     }
   })
+  asteroids.forEach((asteroidCell) => {
+    if (compareLocations(asteroidCell, loc)) alive = false
+  })
+}
+
+const getRandomLocation = () => {
+  const randRow = Math.floor(Math.random() * HEIGHT)
+  const randCol = Math.floor(Math.random() * WIDTH)
+  return {
+    x: randCol,
+    y: randRow
+  }
+}
+
+const newAsteroid = () => {
+  let asteroidLocation = getRandomLocation()
+  let asteroidEl = document.querySelector(
+    `#r${asteroidLocation.y}c${asteroidLocation.x}`
+  )
+  while (asteroidEl.style.backgroundImage) {
+    asteroidLocation = getRandomLocation()
+    asteroidEl = document.querySelector(
+      `#r${asteroidLocation.y}c${asteroidLocation.x}`
+    )
+  }
+  asteroidEl.style.backgroundImage = 'url(../assets/asteroid.png)'
+  asteroids.push(asteroidLocation)
 }
 
 const newEnergy = () => {
   if (energyLocation) clearCell(energyLocation)
-  const energyRow = Math.floor(Math.random() * HEIGHT)
-  const energyCol = Math.floor(Math.random() * WIDTH)
-  energyLocation = {
-    x: energyCol,
-    y: energyRow
-  }
+  energyLocation = getRandomLocation()
+  if (score && score % 5 === 0) newAsteroid()
 }
 
 const pickUpEnergy = () => {
@@ -273,7 +305,7 @@ const togglePause = () => {
     pauseIconEl.style.opacity = '80%'
   } else {
     pauseMessageEl.innerText = 'P to pause'
-    pauseEl.style.opacity = '70%'
+    pauseEl.style.opacity = '50%'
     pauseIconEl.style.opacity = '0'
     gameLoop()
   }
@@ -286,7 +318,7 @@ const toggleMute = () => {
   if (mute) {
     muteMessageEl.innerText = 'M to unmute'
     muteEl.src = 'assets/soundOff.png'
-    muteEl.style.opacity = '70%'
+    muteEl.style.opacity = '50%'
   } else {
     muteMessageEl.innerText = 'M to mute'
     muteEl.src = 'assets/soundOn.png'
@@ -395,15 +427,23 @@ const initTail = () => {
   tail = []
 }
 
+const initAsteroids = () => {
+  if (asteroids) {
+    asteroids.forEach((cell) => clearCell(cell))
+  }
+  asteroids = []
+}
+
 const initStyles = () => {
   messageEl.innerText = `Collect the energy! Avoid your trail!\nPress any key to begin.`
-  resetEl.style.opacity = '70%'
+  resetEl.style.opacity = '50%'
 }
 
 const init = () => {
   createBoard()
   initValues()
   initTail()
+  initAsteroids()
   initStyles()
   newEnergy()
   currentLocation = {
