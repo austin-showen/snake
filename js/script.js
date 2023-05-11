@@ -7,7 +7,7 @@
  * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
  * Sound effects by Kenney.nl, https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc
  * Spaceship sprite adapted from "Pixel Spaceship" by dsonyy, https://opengameart.org/content/pixel-spaceship
- * Asteroid sprite: "I Are Spaceship" by bart, https://opengameart.org/content/i-are-spaceship-16x16-space-sprites
+ * Asteroid sprite: "Brown Asteroid" by Funwithpixels, https://opengameart.org/content/brown-asteroid
  * Energy sprite: "Free Pixel Effects Pack" by CodeManu, https://opengameart.org/content/free-pixel-effects-pack
  * Icons: "GUI Pack" by trezegames, https://opengameart.org/content/gui-pack
  **/
@@ -83,19 +83,19 @@ const audioScore = new Audio('assets/phaserUp4.mp3')
 const audioGameOver = new Audio('assets/phaserDown3.mp3')
 
 /* +-+-+-+- STATE VARIABLES -+-+-+-+ */
-let tailLength
 let currentDirection
 let prevDirection
 let currentLocation
-let tail
 let energyLocation
+let tickspeed
+let tailLength
 let score
 let highScore
 let alive
 let moveQueued
-let tickspeed
 let mute
 let pause
+let tail
 let asteroids
 
 /* +-+-+-+- HTML ELEMENTS -+-+-+-+ */
@@ -227,9 +227,12 @@ const getRandomLocation = () => {
 }
 
 const newAsteroid = () => {
+  console.log('new asteroid')
   let asteroidLocation = getRandomLocation()
   let asteroidEl = getElement(asteroidLocation)
+  console.log(asteroidEl)
   while (asteroidEl.style.backgroundImage) {
+    console.log('.')
     asteroidLocation = getRandomLocation()
     asteroidEl = getElement(asteroidLocation)
   }
