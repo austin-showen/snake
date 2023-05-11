@@ -7,8 +7,9 @@
  * Background image: "Galaxy" by Andy Holmes, https://unsplash.com/photos/rCbdp8VCYhQ
  * Sound effects by Kenney.nl, https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc
  * Spaceship sprite adapted from "Pixel Spaceship" by dsonyy, https://opengameart.org/content/pixel-spaceship
- * Energy sprite: Free Pixel Effects Pack by CodeManu, https://opengameart.org/content/free-pixel-effects-pack
- * Icons: GUI Pack by trezegames, https://opengameart.org/content/gui-pack
+ * Asteroid sprite: "I Are Spaceship" by bart, https://opengameart.org/content/i-are-spaceship-16x16-space-sprites
+ * Energy sprite: "Free Pixel Effects Pack" by CodeManu, https://opengameart.org/content/free-pixel-effects-pack
+ * Icons: "GUI Pack" by trezegames, https://opengameart.org/content/gui-pack
  **/
 
 /* +-+-+-+- CONSTANTS -+-+-+-+ */
@@ -107,6 +108,10 @@ const resetEl = document.querySelector('#reset')
 
 /* +-+-+-+- FUNCTIONS -+-+-+-+ */
 
+const getElement = (loc) => {
+  return document.querySelector(`#r${loc.y}c${loc.x}`)
+}
+
 /* --- Render Functions --- */
 const createBoard = () => {
   boardEl.innerHTML = ''
@@ -121,16 +126,12 @@ const createBoard = () => {
 }
 
 const renderEnergy = () => {
-  const energyCellEl = document.querySelector(
-    `#r${energyLocation.y}c${energyLocation.x}`
-  )
+  const energyCellEl = getElement(energyLocation)
   energyCellEl.style.backgroundImage = 'url(../assets/energy.gif)'
 }
 
 const renderShip = () => {
-  const shipEl = document.querySelector(
-    `#r${currentLocation.y}c${currentLocation.x}`
-  )
+  const shipEl = getElement(currentLocation)
   shipEl.innerHTML = `<img src='../assets/ship.png' class='rotate${DIRECTIONS[currentDirection].shipRotation}'>`
 }
 
@@ -143,8 +144,8 @@ const renderScores = () => {
 }
 
 const renderAsteroids = () => {
-  asteroids.forEach((location) => {
-    const asteroidEl = document.querySelector(`#r${location.y}c${location.x}`)
+  asteroids.forEach((asteroidLocation) => {
+    const asteroidEl = getElement(asteroidLocation)
     asteroidEl.style.backgroundImage = 'url(../assets/asteroid.png)'
   })
 }
@@ -158,7 +159,7 @@ const render = () => {
 
 const renderTailStart = () => {
   const tailStart = tail[tail.length - 1]
-  const tailStartEl = document.querySelector(`#r${tailStart.y}c${tailStart.x}`)
+  const tailStartEl = getElement(tailStart)
 
   let rotation
   if (prevDirection) {
@@ -174,7 +175,7 @@ const renderTailStart = () => {
 
 const renderTailEnd = () => {
   const tailEnd = tail[0]
-  const tailEndEl = document.querySelector(`#r${tailEnd.y}c${tailEnd.x}`)
+  const tailEndEl = getElement(tailEnd)
 
   let rotation
   if (tail[1]) {
@@ -191,7 +192,7 @@ const renderTailEnd = () => {
 }
 
 const clearCell = (loc) => {
-  const cellEl = document.querySelector(`#r${loc.y}c${loc.x}`)
+  const cellEl = getElement(loc)
   cellEl.style.removeProperty('background-image')
   cellEl.innerHTML = ''
 }
@@ -227,22 +228,22 @@ const getRandomLocation = () => {
 
 const newAsteroid = () => {
   let asteroidLocation = getRandomLocation()
-  let asteroidEl = document.querySelector(
-    `#r${asteroidLocation.y}c${asteroidLocation.x}`
-  )
+  let asteroidEl = getElement(asteroidLocation)
   while (asteroidEl.style.backgroundImage) {
     asteroidLocation = getRandomLocation()
-    asteroidEl = document.querySelector(
-      `#r${asteroidLocation.y}c${asteroidLocation.x}`
-    )
+    asteroidEl = getElement(asteroidLocation)
   }
-  asteroidEl.style.backgroundImage = 'url(../assets/asteroid.png)'
   asteroids.push(asteroidLocation)
 }
 
 const newEnergy = () => {
   if (energyLocation) clearCell(energyLocation)
   energyLocation = getRandomLocation()
+  let energyEl = getElement(energyLocation)
+  while (energyEl.style.backgroundImage) {
+    energyLocation = getRandomLocation()
+    energyEl = getElement(energyLocation)
+  }
   if (score && score % 5 === 0) newAsteroid()
 }
 
