@@ -4,7 +4,7 @@
 
 ### Author: Austin Showen
 
-[Website](#) | [GitHub](github.com/austin-showen) | [LinkedIn](#)
+[Website](#) | [GitHub](https://github.com/austin-showen) | [LinkedIn](#)
 
 ---
 
@@ -27,7 +27,7 @@
 
 ### **_Getting Started_**
 
-#### Click [here](snakeship.surge.sh) to play the game.
+#### Click [here](https://snakeship.surge.sh) to play the game.
 
 #### Press ENTER to begin a game of SnakeShip. Pilot your ship with the arrow keys or WASD to collect energy. The more energy you collect, the faster you'll travel, and the longer your exhaust trail will be. As an extra challenge, asteroids will spawn as you score points.
 
